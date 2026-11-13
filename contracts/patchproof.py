@@ -56,4 +56,3 @@ class PatchProof(gl.Contract):
     @gl.public.view
     def get_count(self) -> u64:
         return self.count
-
