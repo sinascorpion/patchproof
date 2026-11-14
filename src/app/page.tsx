@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { ArrowRight, Check, ExternalLink, GitCompareArrows, ShieldCheck } from 'lucide-react';
 import { createClient, isSuccessful } from 'genlayer-js';
 import { studioDevnet } from 'genlayer-js/chains';
+import { ensureStudioDevnet } from './wallet-network';
 
 declare global { interface Window { ethereum?: { request(args:{method:string;params?:unknown[]}):Promise<unknown> } } }
 const address = (process.env.NEXT_PUBLIC_CONTRACT_ADDRESS || '0x3D6Aa87eA11f174295CDc682345c7f19CB645348') as `0x${string}`;
@@ -15,12 +16,11 @@ export default function Home() {
   const [wallet,setWallet]=useState(''); const [phase,setPhase]=useState(''); const [hash,setHash]=useState('');
   const [recordId,setRecordId]=useState(''); const [record,setRecord]=useState<RecordData|null>(null);
   const [error,setError]=useState(''); const [busy,setBusy]=useState(false);
-  async function connect() { if(!window.ethereum) throw Error('Install or unlock an EVM wallet first.'); const accounts=await window.ethereum.request({method:'eth_requestAccounts'}) as string[]; if(!accounts[0]) throw Error('No wallet account selected.'); setWallet(accounts[0]); return accounts[0]; }
+  async function connect() { if(!window.ethereum) throw Error('Install or unlock an EVM wallet first.'); setError(''); const accounts=await window.ethereum.request({method:'eth_requestAccounts'}) as string[]; if(!accounts[0]) throw Error('No wallet account selected.'); await ensureStudioDevnet(window.ethereum); setWallet(accounts[0]); return accounts[0]; }
   async function submit(e:React.FormEvent) { e.preventDefault(); setError(''); setHash(''); setBusy(true); try {
     if(!address) throw Error('The contract is not configured on this deployment yet.');
     if(!name.trim()||!before.trim()||!after.trim()||before.trim()===after.trim()) throw Error('Enter a package and two different versions.');
-    const account=wallet||await connect(); const chainId=await window.ethereum!.request({method:'eth_chainId'});
-    if(chainId!=='0xf22d') throw Error('Switch your wallet to GenLayer Studio-dev (chain ID 61997) before submitting.');
+    const account=await connect();
     const client=createClient({chain:studioDevnet,account:account as `0x${string}`,provider:window.ethereum as never});
     const write={address,functionName:'compare_versions',args:[ecosystem,name.trim(),before.trim(),after.trim()],value:0n};
     setPhase('Estimating network fees'); const estimate=await client.estimateTransactionFeesForWrite(write);
