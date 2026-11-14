@@ -4,7 +4,7 @@ PatchProof records a comparison of known vulnerabilities affecting two versions 
 
 ## Status
 
-Experimental preview on [Studio-dev](https://explorer-studio-dev.genlayer.com/address/0x3D6Aa87eA11f174295CDc682345c7f19CB645348) (chain 61997). The deployment is finalized, and a leader simulation queried OSV successfully for lodash 4.17.20 and 4.17.21. An end-to-end finalized comparison has not yet been verified. Do not rely on the application for production decisions.
+Experimental preview on [Studio-dev](https://explorer-studio-dev.genlayer.com/address/0x3D6Aa87eA11f174295CDc682345c7f19CB645348) (chain 61997). A [finalized comparison transaction](https://explorer-studio-dev.genlayer.com/tx/0xedf0af928343f90e5f9693b167dacda861a4666f9e0e9932124cb5a9375cdc02) successfully queried OSV for lodash 4.17.20 and 4.17.21 and created record 1, which was read back through the SDK. The browser wallet flow has not yet been verified end to end. Do not rely on the application for production decisions.
 
 ## Trust model and limitations
 
@@ -24,4 +24,3 @@ Choose an ecosystem, a package name and two distinct versions. Connect a wallet 
 ## Source and tests
 
 The contract source is `contracts/patchproof.py`. Run `python -m unittest discover -s tests -v` for local mock tests. Mock tests do not establish network consensus behavior or end-to-end correctness; those require a successful on-network lifecycle.
-
